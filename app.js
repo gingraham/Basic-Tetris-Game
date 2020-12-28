@@ -1,6 +1,7 @@
 document.addEventListener(
   "DOMContentLoaded",
   () => {
+    document.addEventListener("keyup", control);
     //Variables
     const grid = document.querySelector(".grid");
     const width = 10;
@@ -83,13 +84,56 @@ document.addEventListener(
     //make the tromino move down every second
     timerID = setInterval(moveDown, 1000);
 
-    //move down function
+    //assign functions to keyCodes
+    function control(e) {
+      if (e.keyCode === 39) moveright();
+      else if (e.keyCode === 38) rotate();
+      else if (e.keyCode === 37) moveleft();
+      else if (e.keyCode === 40) moveDown();
+    }
 
+    // the classical behavior is to speed up the block if down button is kept pressed so doing that
+    document.addEventListener("keydown", control);
+    //move down function
     function moveDown() {
       undraw();
-      currentPosition += width;
+      currentPosition = currentPosition += width;
       draw();
       freeze();
+    }
+    //Move the tetromino left, unsless is at edge of blockage
+    function moveleft() {
+      undraw();
+      const isAtLeftEdge = current.some(
+        (index) => (currentPosition + index) % width === 0
+      );
+      if (!isAtLeftEdge) currentPosition -= 1;
+      if (
+        current.some((index) =>
+          squares[currentPosition + index].classList.contains("taken")
+        )
+      ) {
+        currentPosition += 1;
+      }
+      draw();
+    }
+
+    //Move the tetromino right, unless is at right block edge
+
+    function moveright() {
+      undraw();
+      const isAtRightEdge = current.some(
+        (index) => (currentPosition + index) % width === width - 1
+      );
+      if (!isAtRightEdge) currentPosition += 1;
+      if (
+        current.some((index) =>
+          squares[currentPosition + index].classList.contains("taken")
+        )
+      ) {
+        currentPosition -= 1;
+      }
+      draw();
     }
 
     //Freez Function
@@ -109,18 +153,6 @@ document.addEventListener(
         draw();
       }
     }
-
-    //Move the tetromino left, unsless is at edge of blockage
-function moveLeft(){
-undraw()
-const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0)
-if(!isAtLeftEdge) currentPosition -=1
-if(current.some(index => squares[currentPosition + index].classList.contains("taken")))
-currentPosition +=1
-}
-draw()
-}
-  
   },
   false
 );
